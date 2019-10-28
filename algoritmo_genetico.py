@@ -10,7 +10,7 @@ def gerar_populacao_inicial(tam_populacao, pes, pes_max):
     for i in range(tam_populacao):
         while 1:
             estado = mochila.estado_inicial_aleatorio(pes, pes_max)
-            if estado not in populacao:
+            if mochila.peso_total(estado, pes) > 0:
                 populacao.append(estado)
                 break
 
@@ -36,11 +36,13 @@ def selecionar_individuo_roleta(s, val):
             return s[i]
 
 
-def crossover(taxa, s, val):
+def crossover(taxa, s, val, pes, pes_max, inicio):
     total_cruzamentos = math.floor(len(s) * taxa / 2)
     populacao = list(s)
 
     for i in range(total_cruzamentos):
+        if time()-inicio >= 120:
+            break
         indv_1 = selecionar_individuo_roleta(populacao, val)
         populacao.remove(indv_1)
         indv_2 = selecionar_individuo_roleta(populacao, val)
@@ -53,12 +55,16 @@ def crossover(taxa, s, val):
 
         # print("point", ponto_cruzamento, indv_1, "+", indv_2, "->", novo_1, "and", novo_2)
 
-        s.append(novo_1)
-        s.append(novo_2)
+        if not mochila.mochila_excede(novo_1, pes, pes_max):
+            s.append(novo_1)
+        if not mochila.mochila_excede(novo_2, pes, pes_max):
+            s.append(novo_2)
 
 
-def mutacao(taxa, s):
+def mutacao(taxa, s, pes, pes_max, inicio):
     for aux in s:
+        if time() - inicio >= 120:
+            break
         roleta = random.uniform(0, 1)
         if roleta <= taxa:
             # old = list(aux)
@@ -67,6 +73,8 @@ def mutacao(taxa, s):
                 aux[indice] += 1
             else:
                 aux[indice] -= 1
+            if mochila.mochila_excede(aux, pes, pes_max):
+                s.remove(aux)
             # print(old, "mutou para", aux)
 
 
@@ -78,29 +86,33 @@ def remove_inviaveis(s, pes, pes_max):
 
 def algoritmo_genetico(tam_populacao, taxa_crossover, taxa_mutacao, pes, val, pes_max):
     inicio = time()
+    melhor_estado = []
     populacao = gerar_populacao_inicial(tam_populacao, pes, pes_max)
     populacao = sorted(populacao, key=functools.partial(mochila.valor_total, val=val), reverse=True)
 
     nova_populacao = list(populacao)
-    while inicio - time() < 240:
-        crossover(taxa_crossover, nova_populacao, val)
-        mutacao(taxa_mutacao, nova_populacao)
+    print("Começa loop")
+    while 1:
+        crossover(taxa_crossover, nova_populacao, val, pes, pes_max, inicio)
+        mutacao(taxa_mutacao, nova_populacao, pes, pes_max, inicio)
         remove_inviaveis(nova_populacao, pes, pes_max)
         nova_populacao = sorted(nova_populacao, key=functools.partial(mochila.valor_total, val=val), reverse=True)
         nova_populacao = nova_populacao[:tam_populacao]
-        if nova_populacao == populacao:
+        if nova_populacao:
+            melhor_estado = nova_populacao[0]
+        if nova_populacao == populacao or time() - inicio >= 120:
             break
         populacao = list(nova_populacao)
 
-    return nova_populacao[0]
+    return melhor_estado
+
 
 # v_pesos = [3, 2, 2, 4]
 # v_valores = [4, 3, 3, 5]
-# ss = algoritmo_genetico(30, 0.8, 0.2, v_pesos, v_valores, 25)
+# ss = algoritmo_genetico(8, 0.8, 0.2, v_pesos, v_valores, 25)
 # valor = mochila.valor_total(ss, v_valores)
 # peso = mochila.peso_total(ss, v_pesos)
 # print(ss, peso, valor)
-
 
 # val_pesos = [3, 2, 2, 4]
 # # state = gerar_populacao_inicial(10, val_pesos, 25)

@@ -86,16 +86,31 @@ def expandir_estados(s, pes, pes_max):
 
 
 def estado_inicial_aleatorio(pes, pes_max):
-    novo_pes_max = pes_max*0.5
-    pes_min = pes_max*0.2
-    # novo_pes_max = random.uniform(pes_min, pes_max * 0.6)
+    # novo_pes_max = pes_max*0.5
+    pes_min = pes_max * 0.2
+    novo_pes_max = random.uniform(pes_min, pes_max)
     while 1:
         estado = [0] * len(pes)
         for i in range(len(pes)):
-            estado[i] = random.randint(0, pes_max // pes[i])
-        if not mochila_excede(estado, pes, novo_pes_max) and peso_total(estado, pes) >= pes_min:
+            estado[i] = random.randint(0, novo_pes_max // len(pes) // pes[i])
+        if not mochila_excede(estado, pes, novo_pes_max):
             return estado
 
+
+def save_estado(estado, val, pes, nome_arquivo, tempo_execucao, idx, hiper):
+    str_estado = ''
+    for item in estado:
+        str_estado = str_estado + str(item) + ' '
+
+    str_estado = idx + ',' + str_estado[:-1] + ',' + str(valor_total(estado, val)) + ',' + str(peso_total(estado, pes)) + ',' + str(tempo_execucao)
+
+    for param in hiper[:-1]:
+        str_estado = str_estado + ',' + str(param)
+
+    str_estado = str_estado + ',' + str(hiper[-1]) + '\n'
+
+    with open(nome_arquivo, 'a+') as arquivo:
+        arquivo.write(str_estado)
 
 # val_pesos = [3, 2, 2, 4]
 # state = estado_inicial_aleatorio(val_pesos, 100)

@@ -1,12 +1,14 @@
 import math
 import random
 import aux_problema_mochila as mochila
+from time import time
 
 
 def annealing(t, alfa, num_iter, s, pes, val, pes_max):
+    inicio = time()
     sm = [0] * len(pes)
 
-    while 1:
+    while 1 and time() - inicio < 120:
         for i in range(1, num_iter):
             s2 = mochila.escolher_vizinho_aleatorio(s, pes, pes_max)
             if mochila.valor_total(s2, val) > mochila.valor_total(s, val):
