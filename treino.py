@@ -57,18 +57,6 @@ def treino_beam_search():
 
             mochila.save_estado(solucao, val, pes, 'Treino/beam_search.csv', tempo_total, problema[0], [m])
 
-            # tempos.append(tempo_total)
-            #
-            # valor_solucao = mochila.valor_total(solucao, val)
-            # valores.append(valor_solucao)
-
-        # melhor_valor = max(valores)
-        # valores_normalizados = []
-        # for i, aux in enumerate(valores):
-        #     valores_normalizados.append(aux / melhor_valor)
-        # print(hyper_param_beam_search)
-        # print(valores, valores_normalizados, tempos)
-
 
 def treino_annealing():
     with open('Treino/annealing.csv', 'a+') as arq:
@@ -132,16 +120,3 @@ def treino_algoritmo_genetico():
                     mochila.save_estado(solucao, val, pes, 'Treino/genetico.csv', tempo_total, problema[0],
                                         [tamanho, t_crossover, t_mutacao])
 
-
-
-# m = hyper_param_beam_search[0]
-# pes_max = problemas[9][1]
-# val = mochila.get_val_from_vt(problemas[9][2])
-# pes = mochila.get_pes_from_vt(problemas[9][2])
-# estado_inicial = mochila.estado_inicial_aleatorio(pes, pes_max)
-# print(estado_inicial)
-# tempo_inicio = default_timer()
-# solucao = beam_search(m, estado_inicial, pes, val, pes_max)
-# tempo_total = default_timer() - tempo_inicio
-#
-# print(solucao, tempo_total)
