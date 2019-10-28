@@ -5,10 +5,8 @@ from time import time
 
 def beam_search(m, s, pes, val, pes_max):
     inicio = time()
-    estados_iniciais = mochila.vizinhos_mais_proximos(s, pes, pes_max)
-    estados_iniciais = sorted(estados_iniciais, key=functools.partial(mochila.valor_total, val=val), reverse=True)
 
-    expansao = estados_iniciais[:m]
+    expansao = mochila.vizinhos_mais_proximos(s, pes, pes_max)
     fila = []
 
     while expansao and time() - inicio < 120:
